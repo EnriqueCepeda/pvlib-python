@@ -246,34 +246,9 @@ class Location:
         apparent_zenith = solar_position['apparent_zenith']
         apparent_elevation = solar_position['apparent_elevation']
 
-        if model == 'ineichen':
-            try:
-                linke_turbidity = kwargs.pop('linke_turbidity')
-            except KeyError:
-                interp_turbidity = kwargs.pop('interp_turbidity', True)
-                linke_turbidity = clearsky.lookup_linke_turbidity(
-                    times, self.latitude, self.longitude,
-                    interp_turbidity=interp_turbidity)
-
-            try:
-                airmass_absolute = kwargs.pop('airmass_absolute')
-            except KeyError:
-                airmass_absolute = self.get_airmass(
-                    times, solar_position=solar_position)['airmass_absolute']
-
-            cs = clearsky.ineichen(apparent_zenith, airmass_absolute,
-                                   linke_turbidity, altitude=self.altitude,
-                                   dni_extra=dni_extra, **kwargs)
-        elif model == 'haurwitz':
-            cs = clearsky.haurwitz(apparent_zenith)
-        elif model == 'simplified_solis':
-            cs = clearsky.simplified_solis(
-                apparent_elevation, pressure=pressure, dni_extra=dni_extra,
-                **kwargs)
-        else:
-            raise ValueError('{} is not a valid clear sky model. Must be '
-                             'one of ineichen, simplified_solis, haurwitz'
-                             .format(model))
+        cs = clearsky.simplified_solis(
+            apparent_elevation, pressure=pressure, dni_extra=dni_extra,
+            **kwargs)
 
         return cs
 
